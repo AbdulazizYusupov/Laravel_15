@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,5 +9,5 @@ Route::get('/', function () {
 });
 
 Route::resource('agent',AgentController::class);
+Route::post('/agent-sale{id}',[AgentController::class,'sale'])->name('agent.sale');
 Route::resource('product',ProductController::class);
-Route::resource('order',OrderController::class);

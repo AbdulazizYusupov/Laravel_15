@@ -20,14 +20,7 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{route('product.index')}}">Products</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{route('order.index')}}">Orders</a>
-                </li>
             </ul>
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
         </div>
     </div>
 </nav>
@@ -35,7 +28,7 @@
     <div class="row mb-3">
         <div class="col">
             <h1>Agents</h1>
-            <button href="{{route('agent.store')}}" class="btn btn-info mt-2" data-bs-toggle="modal"
+            <button class="btn btn-info mt-2" data-bs-toggle="modal"
                     data-bs-target="#addAgentModal">Add Agent
             </button>
 
@@ -53,12 +46,13 @@
                             <div class="modal-body">
                                 <input type="text" name="name" class="form-control" placeholder="Name" required><br>
                                 <input type="text" name="phone" class="form-control" placeholder="Phone" required><br>
-                                <select name="parent_id" class="form-control">
-                                    <option value="0">None</option>
-                                    @foreach($models as $model)
-                                        <option value="{{$model->id}}">{{$model->name}}</option>
-                                    @endforeach
-                                </select><br>
+                                @if(isset($models) && $models->isNotEmpty() && $models->first()->parent_id == 0)
+                                    <input value="0" type="hidden" name="parent_id">
+                                @endif
+                                @if(isset($models) && $models->isNotEmpty() && $models->first()->parent_id != 0 && $id)
+                                    <input type="hidden" name="parent_id" value="{{$id}}">
+                                @endif
+                                <br>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -90,12 +84,100 @@
                             <form action="{{route('agent.index')}}" method="get">
                                 <input type="hidden" name="parent_id" value="{{$model->id}}">
                                 <button type="submit"
-                                        class="btn btn-link">{{$model->parent_id != 0 ? $model->parent->name : 'None'}}</button>
+                                        class="btn btn-white">{{$model->parent_id != 0 ? $model->parent->name : 'None'}}</button>
                             </form>
                         </td>
                         <td>{{$model->name}}</td>
                         <td>{{$model->phone}}</td>
                         <td>
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#sale{{ $model->id }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-cart-plus" viewBox="0 0 16 16">
+                                    <path
+                                        d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z"/>
+                                    <path
+                                        d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                                </svg>
+                            </button>
+
+                            <div class="modal fade" id="sale{{ $model->id }}" tabindex="-1"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                                Product
+                                                sell
+                                            </h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <form action="{{ route('agent.sale', $model->id) }}"
+                                              method="POST">
+                                            @csrf
+                                            <div class="modal-body">
+                                                <select name="product_id" class="form-select">
+                                                    @foreach($products as $product)
+                                                        <option value="{{$product->id}}">{{$product->name}}</option>
+                                                    @endforeach
+                                                </select><br>
+                                                <input name="price" type="number" class="form-control">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">Sell</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                    data-bs-target="#create{{ $model->id }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-plus-circle" viewBox="0 0 16 16">
+                                    <path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 15A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path
+                                        d="M8 4a.5.5 0 0 1 .5.5V7h2.5a.5.5 0 0 1 0 1H8.5v2.5a.5.5 0 0 1-1 0V8H4.5a.5.5 0 0 1 0-1H7V4.5A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                            </button>
+
+                            <div class="modal fade" id="create{{ $model->id }}" tabindex="-1"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                                Create
+                                                agent
+                                            </h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <form action="{{ route('agent.store')}}"
+                                              method="POST">
+                                            @csrf
+                                            <div class="modal-body">
+                                                <input type="hidden" name="parent_id" value="{{$model->id}}">
+                                                <input class="form-control" type="text" name="name"
+                                                       placeholder="Name"><br>
+                                                <input class="form-control" type="text" name="phone"
+                                                       placeholder="Phone"><br>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">Add</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
                             <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                     data-bs-target="#edit{{ $model->id }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
