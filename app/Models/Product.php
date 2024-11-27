@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Product extends Model
+{
+    protected $fillable = ['name'];
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'orders', 'product_id');
+    }
+}
