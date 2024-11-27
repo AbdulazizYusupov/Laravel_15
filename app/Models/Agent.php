@@ -18,6 +18,6 @@ class Agent extends Model
     }
     public function orders()
     {
-        return $this->belongsToMany(Order::class,'orders','agent_id');
+        return $this->hasMany(Order::class,'agent_id');
     }
 }

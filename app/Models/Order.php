@@ -9,10 +9,10 @@ class Order extends Model
     protected $fillable = ['agent_id','product_id','price'];
     public function agent()
     {
-        return $this->belongsToMany(Agent::class, 'orders', 'agent_id');
+        return $this->belongsTo(Agent::class, 'agent_id');
     }
     public function product()
     {
-        return $this->belongsToMany(Product::class, 'orders', 'product_id');
+        return $this->belongsTo(Product::class, 'product_id');
     }
 }

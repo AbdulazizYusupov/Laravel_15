@@ -34,9 +34,9 @@
 <div class="container">
     <div class="row mb-3">
         <div class="col">
-            <h1>Agents</h1>
-            <button href="{{route('agent.store')}}" class="btn btn-info mt-2" data-bs-toggle="modal"
-                    data-bs-target="#addAgentModal">Add Agent
+            <h1>Orders</h1>
+            <button class="btn btn-info mt-2" data-bs-toggle="modal"
+                    data-bs-target="#addAgentModal">Add Order
             </button>
 
             <!-- Modal -->
@@ -45,18 +45,21 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="addAgentModalLabel">Add Agent</h5>
+                            <h5 class="modal-title" id="addAgentModalLabel">Add Order</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <form action="{{route('agent.store')}}" method="post">
+                        <form action="{{route('order.store')}}" method="post">
                             @csrf
                             <div class="modal-body">
-                                <input type="text" name="name" class="form-control" placeholder="Name" required><br>
-                                <input type="text" name="phone" class="form-control" placeholder="Phone" required><br>
-                                <select name="parent_id" class="form-control">
-                                    <option value="0">None</option>
-                                    @foreach($models as $model)
-                                        <option value="{{$model->id}}">{{$model->name}}</option>
+                                <input type="number" name="price" class="form-control" placeholder="Price" required><br>
+                                <select name="agent_id" class="form-control">
+                                    @foreach($agents as $agent)
+                                        <option value="{{$agent->id}}">{{$agent->name}}</option>
+                                    @endforeach
+                                </select><br>
+                                <select name="product_id" class="form-control">
+                                    @foreach($products as $product)
+                                        <option value="{{$product->id}}">{{$product->name}}</option>
                                     @endforeach
                                 </select><br>
                             </div>
@@ -76,9 +79,9 @@
                 <thead class="thead-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Parent</th>
-                    <th>Name</th>
-                    <th>Phone</th>
+                    <th>Agent</th>
+                    <th>Product</th>
+                    <th>Price</th>
                     <th>Options</th>
                 </tr>
                 </thead>
@@ -86,15 +89,9 @@
                 @foreach($models as $model)
                     <tr>
                         <th>{{$model->id}}</th>
-                        <td>
-                            <form action="{{route('agent.index')}}" method="get">
-                                <input type="hidden" name="parent_id" value="{{$model->id}}">
-                                <button type="submit"
-                                        class="btn btn-link">{{$model->parent_id != 0 ? $model->parent->name : 'None'}}</button>
-                            </form>
-                        </td>
-                        <td>{{$model->name}}</td>
-                        <td>{{$model->phone}}</td>
+                        <td>{{$model->agent->name}}</td>
+                        <td>{{$model->product->name}}</td>
+                        <td>{{$model->price}}</td>
                         <td>
                             <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                     data-bs-target="#edit{{ $model->id }}">
@@ -112,20 +109,38 @@
                                         <div class="modal-header">
                                             <h1 class="modal-title fs-5" id="exampleModalLabel">
                                                 Update
-                                                agent
+                                                order
                                             </h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                         </div>
-                                        <form action="{{ route('agent.update', $model->id) }}"
+                                        <form action="{{ route('order.update', $model->id) }}"
                                               method="POST">
                                             @csrf
                                             @method('PUT')
                                             <div class="modal-body">
-                                                <input class="form-control" type="text" name="name"
-                                                       value="{{ $model->name }}"><br>
-                                                <input class="form-control" type="text" name="phone"
-                                                       value="{{ $model->phone }}"><br>
+                                                <input class="form-control" type="number" name="price"
+                                                       value="{{ $model->price }}"><br>
+                                                <select name="agent_id" class="form-control">
+                                                    @foreach($agents as $agent)
+                                                        @if($agent->id == $model->agent_id)
+                                                            <option value="{{$agent->id}}" selected>
+                                                                {{$agent->name}}
+                                                            </option>
+                                                        @endif
+                                                        <option value="{{$agent->id}}">{{$agent->name}}</option>
+                                                    @endforeach
+                                                </select><br>
+                                                <select name="product_id" class="form-control">
+                                                    @foreach($products as $product)
+                                                        @if($product->id == $model->product_id)
+                                                            <option value="{{$product->id}}" selected>
+                                                                {{$product->name}}
+                                                            </option>
+                                                        @endif
+                                                        <option value="{{$product->id}}">{{$product->name}}</option>
+                                                    @endforeach
+                                                </select><br>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
@@ -137,7 +152,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <form action="{{route('agent.destroy', $model->id)}}" method="post"
+                            <form action="{{route('order.destroy', $model->id)}}" method="post"
                                   class="d-inline-block">
                                 @csrf
                                 @method('delete')

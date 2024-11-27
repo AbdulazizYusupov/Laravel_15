@@ -8,9 +8,13 @@ use Illuminate\Http\Request;
 
 class AgentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $models = Agent::orderBy('id', 'asc')->paginate(10);
+        if ($request->has('parent_id') && $request->parent_id != 0) {
+            $models = Agent::orderBy('id','desc')->where('parent_id',$request->parent_id)->paginate(10);
+            return view('agent.index', compact('models'));
+        }
+        $models = Agent::orderBy('id', 'asc')->where('parent_id',0)->paginate(10);
         return view('agent.index', compact('models'));
     }
     public function store(Request $request)

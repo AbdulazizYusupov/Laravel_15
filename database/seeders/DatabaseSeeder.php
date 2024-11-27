@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Agent;
+use App\Models\Order;
+use App\Models\Product;
 use App\Models\Talaba;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -29,6 +31,20 @@ class DatabaseSeeder extends Seeder
 //                'parent_id' => $i == 1 ? 0 : $a,
 //                'name' => $i == 1 ? 'Parent Agent' : ($a == 0 ? 'Parent Agent' : 'Child Agent - ' . $i),
 //                'phone' => '123456789' . $i,
+//            ]);
+//        }
+//        for ($i = 1; $i < 100; $i++)
+//        {
+//            Product::create([
+//                'name' => 'Product ' . $i,
+//            ]);
+//        }
+//        for ($i = 1; $i < 100; $i++)
+//        {
+//            Order::create([
+//                'agent_id' => rand(1,100),
+//                'product_id' => rand(1,88),
+//                'price' => rand(100,10000),
 //            ]);
 //        }
     }
